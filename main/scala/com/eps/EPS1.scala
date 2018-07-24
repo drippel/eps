@@ -8,6 +8,9 @@ import scala.util.control.Breaks._
 
 object EPS1 {
 
+  // 2170007ms against pride and prejudice
+  // 500ms agains input
+
   def main( args : Array[String] ) : Unit = {
 
     val start = new Date()
