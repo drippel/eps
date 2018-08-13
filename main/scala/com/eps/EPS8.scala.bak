@@ -1,0 +1,92 @@
+package com.eps
+
+import scala.collection.mutable.HashMap
+import scala.io.Source
+
+object EPS8 {
+
+  def main( args : Array[String] ) = {
+    Console.println("eps8...")
+    // The main function
+    // read_file( "../src/main/resources/pride-and-prejudice.txt", filter_chars )
+    read_file( "../src/main/resources/pride-and-prejudice.txt", filter_chars )
+  }
+
+  // The functions
+  def read_file( path_to_file : String,
+                 func : ( String,
+                          ( String,
+                            ( List[String],
+                            ( HashMap[String,Int], List[String] ) => Unit ) => Unit ) => Unit ) => Unit ) :  Unit  = {
+
+    val data = Source.fromFile(path_to_file)
+      .getLines()
+      .map( ( _ + "\n" ) ).toList.flatten.toString
+
+    filter_chars(data, normalize)
+  }
+
+  def filter_chars( str_data : String,
+                    func : ( String,
+                           ( List[String],
+                               ( HashMap[String,Int], List[String] ) => Unit ) => Unit ) => Unit ) = {
+    val fc = str_data.map( (c:Char) => { if( c.isLetterOrDigit ){c.toLower}else{' ' }} )
+    func( fc, scan)
+  }
+
+  def normalize(str_data : String,
+                func : ( List[String],
+                         (List[String], (HashMap[String,Int],List[String]) => Unit ) => Unit ) => Unit ) = {
+    func( str_data.toLowerCase(), remove_stop_words)
+  }
+
+  def scan(str_data : String,
+           func : ( List[String],
+                  ( HashMap[String,Int], List[String] ) => Unit ) => Unit ) = {
+    func(str_data.split(' '), frequencies)
+  }
+
+  def remove_stop_words(word_list : List[String],
+                        func : (List[String], (HashMap[String,Int],List[String]) => Unit ) => Unit ) : Unit = {
+    val stop_words = Source.fromFile("../src/main/resources/stop_words.txt")
+      .getLines()
+      .toList
+      .map( _.split(',') ).flatten
+
+    // add single-letter words
+    func( word_list.filter( ( w : String) => { !stop_words.contains(w) && w.length > 1 } ), sort)
+  }
+
+  def frequencies(word_list : List[String],
+                  func : ( HashMap[String,Int], (List[String]) => Unit) => Unit ) = {
+
+    val wf = HashMap[String,Int]()
+    for( w <- word_list ) {
+      if( wf.contains(w) ){
+        wf(w) += 1
+      }
+      else{
+        wf(w) = 1
+      }
+    }
+
+    func(wf, print_text)
+  }
+
+  def sort(wf : HashMap[String,Int], func : (List[String], () => Unit) => Unit ) = {
+    func( wf.toList.sortBy( -_._2 ), no_op)
+  }
+
+  def print_text(word_freqs : List[(String,Int)], func : () => Unit ) = {
+    for( t <- word_freqs.slice(0,25) ){
+      Console.println( t._1 + " - " + t._2 )
+    }
+    func()
+  }
+
+  def no_op() : Unit = { }
+
+
+
+
+}
