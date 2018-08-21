@@ -86,15 +86,13 @@ object EPS8a {
     f( wf.toList.sortBy( -_._2 ), noop )
   }
 
-  def print_text( word_freqs : List[(String,Int)], f : () => Unit ) = {
+  val print_text = ( word_freqs : List[(String,Int)], f : () => Unit ) => {
     for( t <- word_freqs.slice(0,25) ){
       Console.println( t._1 + "-" + t._2 )
     }
     f()
   }
 
-  def noop() : Unit = {
-    Console.println("noop...")
-  }
+  val noop = () => { Console.println("noop...") }
 
 }

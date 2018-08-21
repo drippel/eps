@@ -1,0 +1,32 @@
+package com.eps
+
+object KickForward {
+
+  type Continuation = ( Continuation => Unit)
+
+  val start = ( c : Continuation ) => {
+    Console.println( "start" )
+    c( end )
+  }
+
+  val mid = ( c : Continuation ) => {
+    Console.println( "mid" )
+    c( noop )
+  }
+
+  val end = ( c : Continuation ) => {
+    Console.println( "end:" )
+    c(noop)
+  }
+
+  val noop = ( c : Continuation ) => {
+    Console.println( "noop" )
+  }
+
+  def main( args : Array[String] ) : Unit = {
+    Console.println("kick...")
+    start( mid )
+    Console.println("done...")
+  }
+
+}
